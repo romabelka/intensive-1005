@@ -1,8 +1,9 @@
-import { all, call, put, take, delay } from "redux-saga/effects";
+import { all, call, fork, put, take, delay } from "redux-saga/effects";
 import { appName } from "../config";
 import { Record } from "immutable";
 import apiService from "../services/api";
 import { useSelector } from "react-redux";
+import { eventChannel } from "redux-saga";
 
 /**
  * Constants
@@ -123,19 +124,22 @@ export const signUpSaga = function* () {
   }
 };
 
-export const saga = function* () {
-  yield all([signUpSaga()]);
-};
+const authChangeChannel = () => eventChannel(apiService.onAuthChange);
 
-/**
- * Init Logic
- */
+export const init = function* () {
+  const channel = yield call(authChangeChannel);
 
-export const init = (store) => {
-  apiService.onAuthChange((user) => {
-    store.dispatch({
+  while (true) {
+    const user = yield take(channel);
+
+    yield put({
       type: AUTH_CHANGE,
       payload: { user },
     });
-  });
+  }
+};
+
+export const saga = function* () {
+  yield fork(init);
+  yield all([signUpSaga()]);
 };
