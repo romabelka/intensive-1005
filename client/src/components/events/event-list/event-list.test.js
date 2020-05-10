@@ -1,45 +1,28 @@
 import React from "react";
-import { shallow, mount } from "enzyme";
 import eventually from "wix-eventually";
 import EventList from "./index";
-import { Provider } from "react-redux";
-import { initStore } from "../../../redux";
-import { act } from "react-dom/test-utils";
+import createDriver from "./event-list.driver";
 
 describe("EventList", () => {
-  it("should display empty list", () => {
-    const element = mount(
-      <Provider store={initStore()}>
-        <EventList />
-      </Provider>
-    );
+  let driver = null;
 
-    expect(element.find('[data-id="empty-list"]').exists()).toBe(true);
-    expect(element.find('[data-id="event-list-item"]').length).toBe(0);
+  beforeEach(() => {
+    driver = createDriver();
+  });
+
+  it("should display empty list", () => {
+    expect(driver.get.emptyCation().exists()).toBe(true);
+    expect(driver.get.listItems().length).toBe(0);
   });
 
   it("should add event", async () => {
-    const element = mount(
-      <Provider store={initStore()}>
-        <EventList />
-      </Provider>
-    );
-
-    act(() => {
-      /*
-            element.find('[data-id="event-form-title"]').at(0).simulate('change', {target: {value: 'some title'}})
-            element.find('[data-id="event-form-url"]').at(0).simulate('change', {target: {value: 'some url'}})
-
-            element.update()
-*/
-
-      element.find('[data-id="event-form"]').at(0).simulate("submit");
-    });
+    driver.when.formSubmit();
 
     await eventually(() => {
-      element.update();
-      expect(element.find('[data-id="event-list-item"]').length).toBe(1);
-      expect(element.find('[data-id="empty-list"]').exists()).toBe(false);
+      driver.update();
+
+      expect(driver.get.listItems().length).toBe(1);
+      expect(driver.get.emptyCation().exists()).toBe(false);
     });
   });
 });
