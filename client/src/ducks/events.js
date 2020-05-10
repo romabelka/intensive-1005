@@ -36,7 +36,7 @@ export default function reducer(state = new ReducerRecord(), action) {
 
   switch (type) {
     case ADD_EVENT:
-      return state.setIn(["entities", payload.id], payload);
+      return state.setIn(["entities", payload.id], new EventRecord(payload));
 
     default:
       return state;
@@ -46,6 +46,9 @@ export default function reducer(state = new ReducerRecord(), action) {
 /**
  * Selectors
  * */
+
+export const eventListSelector = (state) =>
+  state[moduleName].entities.valueSeq().toArray();
 
 /**
  * Action Creators

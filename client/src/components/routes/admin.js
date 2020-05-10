@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuthorized } from "../../ducks/auth";
-import EventForm from "../events/event-form";
 import { NavLink, Route } from "react-router-dom";
+import EventList from "../events/event-list";
 
 function AdminPage() {
   const isAuthorized = useAuthorized();
@@ -12,7 +12,7 @@ function AdminPage() {
     <div>
       <h1>Admin</h1>
       <NavLink to="/admin/new-event">Add Event</NavLink>
-      <Route path="/admin/new-event" component={EventForm} />
+      <Route path="/admin/new-event" component={EventList} />
     </div>
   );
 }

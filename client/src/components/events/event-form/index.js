@@ -5,16 +5,24 @@ import { createEvent } from "../../../ducks/events";
 
 function EventForm() {
   const dispatch = useDispatch();
-  const handleSubmit = (event) => dispatch(createEvent(event));
+  const handleSubmit = (event) => {
+    console.log(123, event);
+    dispatch(createEvent(event));
+  };
 
   return (
     <div>
       <h3>Event Form</h3>
-      <Formik initialValues={{ title: "", url: "" }} onSubmit={handleSubmit}>
-        <Form>
-          Title: <Field name="title" />
-          Url: <Field name="url" />
-          <button type="submit">Create Event</button>
+      <Formik
+        initialValues={{ title: "some title", url: "some url" }}
+        onSubmit={handleSubmit}
+      >
+        <Form data-id="event-form">
+          Title: <Field name="title" data-id="event-form-title" />
+          Url: <Field name="url" data-id="event-form-url" />
+          <button type="submit" data-id="event-form-submit">
+            Create Event
+          </button>
         </Form>
       </Formik>
     </div>
