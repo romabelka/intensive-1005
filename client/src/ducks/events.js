@@ -1,6 +1,7 @@
 import { appName } from "../config";
 import { OrderedMap, Record } from "immutable";
 import { v4 as uuid } from "uuid";
+import { put, call, takeEvery } from "redux-saga/effects";
 
 /**
  * Constants
@@ -8,6 +9,7 @@ import { v4 as uuid } from "uuid";
 export const moduleName = "events";
 const prefix = `${appName}/${moduleName}`;
 
+export const ADD_EVENT_REQUEST = `${prefix}/ADD_EVENT_REQUEST`;
 export const ADD_EVENT = `${prefix}/ADD_EVENT`;
 
 /**
@@ -49,15 +51,27 @@ export default function reducer(state = new ReducerRecord(), action) {
  * Action Creators
  * */
 
-export const createEvent = (event) => (dispatch) =>
-  dispatch({
-    type: ADD_EVENT,
-    payload: {
-      id: uuid(),
-      ...event,
-    },
-  });
+export const createEvent = (event) => ({
+  type: ADD_EVENT_REQUEST,
+  payload: event,
+});
 
 /**
  * Sagas
  * */
+
+export const addEventSaga = function* ({ payload }) {
+  const id = yield call(uuid);
+
+  yield put({
+    type: ADD_EVENT,
+    payload: {
+      id,
+      ...payload,
+    },
+  });
+};
+
+export const saga = function* () {
+  yield takeEvery(ADD_EVENT_REQUEST, addEventSaga);
+};
