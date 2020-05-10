@@ -7,6 +7,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "connected-react-router": "^6.8.0",
+    "firebase": "^7.14.3",
     "formik": "^2.1.4",
     "history": "^4.10.1",
     "immutable": "^4.0.0-rc.12",
@@ -16,7 +17,8 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
     "redux": "^4.0.5",
-    "redux-logger": "^3.0.6"
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0"
   },
   "scripts": {
     "start": "react-scripts start",

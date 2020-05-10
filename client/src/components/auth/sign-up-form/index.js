@@ -1,13 +1,18 @@
 import React from "react";
 import { Formik, Form, Field } from "formik";
+import { useDispatch } from "react-redux";
+import { signUp } from "../../../ducks/auth";
 
 function SignUpForm() {
+  const dispatch = useDispatch();
+  const handleSubmit = ({ email, password }) =>
+    dispatch(signUp(email, password));
   return (
     <div>
       <h3>Sign Up</h3>
       <Formik
         initialValues={{ email: "", password: "" }}
-        onSubmit={console.log}
+        onSubmit={handleSubmit}
       >
         <Form>
           email: <Field type="email" name="email" />
