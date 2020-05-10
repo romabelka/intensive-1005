@@ -1,4 +1,4 @@
-import { takeEvery, call, put } from "redux-saga/effects";
+import { takeLatest, call, put } from "redux-saga/effects";
 import { appName } from "../config";
 import { Record } from "immutable";
 import apiService from "../services/api";
@@ -98,7 +98,7 @@ export const signUpSaga = function* ({ payload: { email, password } }) {
 };
 
 export const saga = function* () {
-  yield takeEvery(SIGN_UP_REQUEST, signUpSaga);
+  yield takeLatest(SIGN_UP_REQUEST, signUpSaga);
 };
 
 /**
