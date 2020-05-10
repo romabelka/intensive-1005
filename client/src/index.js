@@ -5,6 +5,7 @@ import { ConnectedRouter } from "connected-react-router";
 import App from "./app";
 import { initStore } from "./redux";
 import history from "./history";
+import "./mocks";
 
 ReactDOM.render(
   <Provider store={initStore()}>
