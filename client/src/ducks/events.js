@@ -1,7 +1,15 @@
 import { appName } from "../config";
 import { OrderedMap, Record } from "immutable";
-import { v4 as uuid } from "uuid";
-import { put, call, takeEvery, all, delay } from "redux-saga/effects";
+import {
+  put,
+  call,
+  takeEvery,
+  all,
+  delay,
+  fork,
+  take,
+} from "redux-saga/effects";
+import { eventChannel } from "redux-saga";
 import apiService from "../services/api";
 
 /**
@@ -12,6 +20,8 @@ const prefix = `${appName}/${moduleName}`;
 
 export const FETCH_EVENTS_REQUEST = `${prefix}/FETCH_EVENTS_REQUEST`;
 export const FETCH_EVENTS_SUCCESS = `${prefix}/FETCH_EVENTS_SUCCESS`;
+
+export const SYNC_EVENTS_SUCCESS = `${prefix}/SYNC_EVENTS_SUCCESS`;
 
 export const ADD_EVENT_REQUEST = `${prefix}/ADD_EVENT_REQUEST`;
 export const ADD_EVENT = `${prefix}/ADD_EVENT`;
@@ -39,7 +49,7 @@ const arrToMap = (arr) => {
   const map = arr.reduce((acc, el) => {
     acc[el.id] = new EventRecord(el);
     return acc;
-  }, new OrderedMap({}));
+  }, {});
 
   return new OrderedMap(map);
 };
@@ -51,6 +61,7 @@ export default function reducer(state = new ReducerRecord(), action) {
     case ADD_EVENT:
       return state.setIn(["entities", payload.id], new EventRecord(payload));
 
+    case SYNC_EVENTS_SUCCESS:
     case FETCH_EVENTS_SUCCESS:
       return state.set("entities", arrToMap(payload.events));
 
@@ -64,7 +75,10 @@ export default function reducer(state = new ReducerRecord(), action) {
  * */
 
 export const eventListSelector = (state) =>
-  state[moduleName].entities.valueSeq().toArray();
+  state[moduleName].entities
+    .valueSeq()
+    .toArray()
+    .sort((a, b) => (a.title < b.title ? -1 : 1));
 
 /**
  * Action Creators
@@ -84,15 +98,8 @@ export const fetchEvents = () => ({
  * */
 
 export const addEventSaga = function* ({ payload }) {
-  const id = yield call(uuid);
-
-  yield put({
-    type: ADD_EVENT,
-    payload: {
-      id,
-      ...payload,
-    },
-  });
+  console.log("---", 123, payload);
+  yield call(apiService.addEvent, payload);
 };
 
 export const fetchEventsWithRetrySaga = function* () {
@@ -121,9 +128,29 @@ export const retryExp = function* (saga) {
   }
 };
 
+export const syncEventsPolling = function* () {
+  while (true) {
+    yield fork(fetchEventsSaga);
+    yield delay(5000);
+  }
+};
+
+const createEventChanel = () => eventChannel(apiService.onEventsChange);
+
+export const syncEvents = function* () {
+  const chanel = yield call(createEventChanel);
+
+  while (true) {
+    const events = yield take(chanel);
+
+    yield put({
+      type: SYNC_EVENTS_SUCCESS,
+      payload: { events },
+    });
+  }
+};
+
 export const saga = function* () {
-  yield all([
-    takeEvery(ADD_EVENT_REQUEST, addEventSaga),
-    takeEvery(FETCH_EVENTS_REQUEST, fetchEventsWithRetrySaga),
-  ]);
+  yield fork(syncEvents);
+  yield all([takeEvery(ADD_EVENT_REQUEST, addEventSaga)]);
 };

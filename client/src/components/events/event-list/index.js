@@ -1,14 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import EventForm from "../event-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { eventListSelector, fetchEvents } from "../../../ducks/events";
 
 function EventList() {
-  const dispatch = useDispatch();
   const events = useSelector(eventListSelector);
-  useEffect(() => {
-    dispatch(fetchEvents());
-  }, [dispatch, fetchEvents]);
   return (
     <div>
       <EventForm />

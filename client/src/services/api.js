@@ -11,6 +11,14 @@ class ApiService {
   fetchEvents = () =>
     this.fb.firestore().collection("events").get().then(processFbCollection);
 
+  addEvent = (event) => this.fb.firestore().collection("events").add(event);
+
+  onEventsChange = (callback) =>
+    this.fb
+      .firestore()
+      .collection("events")
+      .onSnapshot((data) => callback(processFbCollection(data)));
+
   signUp = (email, password) =>
     this.fb.auth().createUserWithEmailAndPassword(email, password);
 
