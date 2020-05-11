@@ -1,4 +1,5 @@
 import { all, call, put, take, delay } from "redux-saga/effects";
+import { eventChannel } from "redux-saga";
 import { appName } from "../config";
 import { Record } from "immutable";
 import apiService from "../services/api";
@@ -16,6 +17,9 @@ export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`;
 export const SIGN_UP_ERROR = `${prefix}/SIGN_UP_ERROR`;
 export const SIGN_UP_TIMEOUT_LIMIT = `${prefix}/SIGN_UP_TIMEOUT_LIMIT`;
 export const SIGN_UP_HARD_LIMIT = `${prefix}/SIGN_UP_HARD_LIMIT`;
+
+export const SIGN_OUT_SUCCESS = `${prefix}/SIGN_OUT_SUCCESS`;
+export const SIGN_IN_SUCCESS = `${prefix}/SIGN_IN_SUCCESS`;
 
 export const AUTH_CHANGE = `${prefix}/AUTH_CHANGE`;
 
@@ -37,10 +41,14 @@ export default function reducer(state = new ReducerRecord(), action) {
 
     case AUTH_CHANGE:
     case SIGN_UP_SUCCESS:
+    case SIGN_IN_SUCCESS:
       return state
         .set("loading", false)
         .set("user", payload.user)
         .set("error", null);
+
+    case SIGN_OUT_SUCCESS:
+      return state.set("user", null);
 
     case SIGN_UP_ERROR:
       return state.set("error", error).set("loading", false);
@@ -123,19 +131,28 @@ export const signUpSaga = function* () {
   }
 };
 
-export const saga = function* () {
-  yield all([signUpSaga()]);
+export const createAuthChanel = () =>
+  eventChannel((emit) => apiService.onAuthChange((user) => emit({ user })));
+
+export const syncAuthState = function* () {
+  const chanel = yield call(createAuthChanel);
+
+  while (true) {
+    const { user } = yield take(chanel);
+
+    if (user) {
+      yield put({
+        type: SIGN_IN_SUCCESS,
+        payload: { user },
+      });
+    } else {
+      yield put({
+        type: SIGN_OUT_SUCCESS,
+      });
+    }
+  }
 };
 
-/**
- * Init Logic
- */
-
-export const init = (store) => {
-  apiService.onAuthChange((user) => {
-    store.dispatch({
-      type: AUTH_CHANGE,
-      payload: { user },
-    });
-  });
+export const saga = function* () {
+  yield all([signUpSaga(), syncAuthState()]);
 };
