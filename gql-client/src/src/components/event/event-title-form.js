@@ -4,10 +4,15 @@ import renameMutation from '../../queries/rename-event-mutation'
 
 function EventTitleForm({ event }) {
     const [title, setTitle] = useState(event.title)
-    const [rename, { loading }] = useMutation(renameMutation, { variables: {
+    const [rename, { loading }] = useMutation(renameMutation, {
+        variables: {
             id: event.id,
             title
-        }})
+        },
+        optimisticResponse: {
+            renameEvent: {"id": event.id, "title":title, "__typename":"Event"}
+        }
+    })
 
     const handleSubmit = ev => {
         ev.preventDefault()
