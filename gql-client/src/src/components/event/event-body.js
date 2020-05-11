@@ -1,6 +1,7 @@
 import React from 'react'
 import {useQuery} from '@apollo/react-hooks'
 import eventQuery from '../../queries/event'
+import EventTitleForm from './event-title-form'
 
 
 function EventBody({event}) {
@@ -14,6 +15,7 @@ function EventBody({event}) {
             <div>
                 {data.event.people && data.event.people.map(p => p.email).join(';')}
             </div>
+            <EventTitleForm event={event}/>
         </div>
     )
 }

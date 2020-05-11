@@ -19,6 +19,10 @@ const typeDefs = gql`
         allEvents(filter: String): [Event]
         event(id: String!): Event
     }
+    
+    type Mutation {
+        renameEvent(id: ID!, title: String!): Event
+    }
 `;
 
 module.exports = typeDefs

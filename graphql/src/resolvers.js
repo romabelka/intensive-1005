@@ -11,6 +11,12 @@ const resolvers = {
         },
         event: (_, { id }) => makeAsync(eventsMap[id])
     },
+    Mutation: {
+        renameEvent: (_, { id, title }) => {
+            eventsMap[id].title = title
+            return makeAsync(eventsMap[id])
+        }
+    },
     Event: {
         id: (obj) => obj._id,
         people: (obj) => makeAsync(people.filter(person => obj.peopleIds && obj.peopleIds.includes(person._id)), 500)
