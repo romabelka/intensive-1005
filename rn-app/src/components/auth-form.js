@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import {View, StyleSheet, Text, TextInput} from 'react-native'
-import {observable} from 'mobx'
 import {observer} from 'mobx-react'
+import authStore from '../stores/auth'
+import PasswordValidation from "./password-validation";
 
 @observer
 class AuthForm extends Component {
@@ -9,23 +10,18 @@ class AuthForm extends Component {
 
     };
 
-    @observable email = ''
-    @observable password = ''
-
-    handleEmailChange = email => this.email = email
-    handlePasswordChange = password => this.password = password
-
     render() {
         return (
             <View>
                 <Text>Email:</Text>
-                <TextInput value={this.email}
-                           onChangeText={this.handleEmailChange}/>
+                <TextInput value={authStore.email}
+                           onChangeText={authStore.setEmail}/>
                 <Text>Password:</Text>
-                <TextInput value={this.password}
-                           onChangeText={this.handlePasswordChange}
+                <TextInput value={authStore.password}
+                           onChangeText={authStore.setPassword}
                            secureTextEntry
                 />
+                <PasswordValidation />
             </View>
         )
     }

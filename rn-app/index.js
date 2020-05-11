@@ -1,4 +1,8 @@
 import { registerRootComponent } from 'expo';
+import {configure} from 'mobx'
+configure({
+    enforceActions: 'always'
+})
 
 import App from './App';
 
