@@ -17,6 +17,7 @@ const typeDefs = gql`
     
     type Query {
         allEvents(filter: String): [Event]
+        event(id: String!): Event
     }
 `;
 

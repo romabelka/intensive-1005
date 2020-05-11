@@ -9,6 +9,7 @@ const resolvers = {
                 : Object.values(eventsMap)
             )
         },
+        event: (_, { id }) => makeAsync(eventsMap[id])
     },
     Event: {
         id: (obj) => obj._id,
