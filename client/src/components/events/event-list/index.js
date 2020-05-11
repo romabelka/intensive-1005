@@ -1,7 +1,7 @@
 import React from "react";
 import EventForm from "../event-form";
 import { useSelector } from "react-redux";
-import { eventListSelector, fetchEvents } from "../../../ducks/events";
+import { eventListSelector } from "../../../ducks/events";
 
 function EventList() {
   const events = useSelector(eventListSelector);

@@ -4,7 +4,6 @@ import logger from "redux-logger";
 import createSagaMiddleware from "redux-saga";
 import reducer from "./reducer";
 import history from "../history";
-import init from "./init";
 import rootSaga from "./saga";
 
 export const initStore = () => {
@@ -17,10 +16,7 @@ export const initStore = () => {
   );
 
   const store = createStore(reducer, enhancer);
-
   sagaMiddleware.run(rootSaga);
-
-  init(store);
 
   return store;
 };
