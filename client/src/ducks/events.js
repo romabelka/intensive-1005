@@ -8,6 +8,9 @@ import {
   delay,
   fork,
   take,
+  cancel,
+  cancelled,
+  spawn,
 } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import apiService from "../services/api";
@@ -25,6 +28,10 @@ export const SYNC_EVENTS_SUCCESS = `${prefix}/SYNC_EVENTS_SUCCESS`;
 
 export const ADD_EVENT_REQUEST = `${prefix}/ADD_EVENT_REQUEST`;
 export const ADD_EVENT = `${prefix}/ADD_EVENT`;
+export const ADD_EVENT_SUCCESS = `${prefix}/ADD_EVENT_SUCCESS`;
+
+export const START_SYNC = `${prefix}/START_SYNC`;
+export const STOP_SYNC = `${prefix}/STOP_SYNC`;
 
 /**
  * Reducer
@@ -98,8 +105,10 @@ export const fetchEvents = () => ({
  * */
 
 export const addEventSaga = function* ({ payload }) {
-  console.log("---", 123, payload);
   yield call(apiService.addEvent, payload);
+  yield put({
+    type: ADD_EVENT_SUCCESS,
+  });
 };
 
 export const fetchEventsWithRetrySaga = function* () {
@@ -140,17 +149,33 @@ const createEventChanel = () => eventChannel(apiService.onEventsChange);
 export const syncEvents = function* () {
   const chanel = yield call(createEventChanel);
 
-  while (true) {
-    const events = yield take(chanel);
+  try {
+    while (true) {
+      const events = yield take(chanel);
 
-    yield put({
-      type: SYNC_EVENTS_SUCCESS,
-      payload: { events },
-    });
+      yield put({
+        type: SYNC_EVENTS_SUCCESS,
+        payload: { events },
+      });
+    }
+  } finally {
+    if (yield cancelled()) {
+      console.log("cancelled");
+    }
+  }
+};
+
+const cancelableSync = function* () {
+  throw new Error("Some Error");
+  while (true) {
+    yield take(START_SYNC);
+    const process = yield fork(syncEvents);
+    yield take(STOP_SYNC);
+    yield cancel(process);
   }
 };
 
 export const saga = function* () {
-  yield fork(syncEvents);
+  yield spawn(cancelableSync);
   yield all([takeEvery(ADD_EVENT_REQUEST, addEventSaga)]);
 };

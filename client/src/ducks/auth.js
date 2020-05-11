@@ -21,8 +21,6 @@ export const SIGN_UP_HARD_LIMIT = `${prefix}/SIGN_UP_HARD_LIMIT`;
 export const SIGN_OUT_SUCCESS = `${prefix}/SIGN_OUT_SUCCESS`;
 export const SIGN_IN_SUCCESS = `${prefix}/SIGN_IN_SUCCESS`;
 
-export const AUTH_CHANGE = `${prefix}/AUTH_CHANGE`;
-
 /**
  * Reducer
  * */
@@ -39,8 +37,6 @@ export default function reducer(state = new ReducerRecord(), action) {
     case SIGN_UP_START:
       return state.set("loading", true);
 
-    case AUTH_CHANGE:
-    case SIGN_UP_SUCCESS:
     case SIGN_IN_SUCCESS:
       return state
         .set("loading", false)

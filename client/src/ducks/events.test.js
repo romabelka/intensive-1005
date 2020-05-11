@@ -21,7 +21,7 @@ describe("Events Duck", () => {
       expect(step1.done).toBe(false);
       expect(step1.value).toEqual(call(uuid));
 
-      //const id = uuid()
+      //const id = await uuid()
       const id = "42";
 
       const step2 = process.next(id);
