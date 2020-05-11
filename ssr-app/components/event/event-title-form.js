@@ -2,15 +2,15 @@ import React, {useState} from 'react'
 import {useMutation} from '@apollo/react-hooks'
 import renameMutation from '../../queries/rename-event-mutation'
 
-function EventTitleForm({ event }) {
-    const [title, setTitle] = useState(event.title)
+function EventTitleForm({ id }) {
+    const [title, setTitle] = useState('')
     const [rename, { loading }] = useMutation(renameMutation, {
         variables: {
-            id: event.id,
+            id,
             title
         },
         optimisticResponse: {
-            renameEvent: {"id": event.id, "title":title, "__typename":"Event"}
+            renameEvent: { id, title, __typename:"Event"}
         }
     })
 

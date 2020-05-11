@@ -1,13 +1,11 @@
 import React, {useState} from 'react'
 import EventBody from "./event-body";
 
-function Index({event}) {
-    const [isOpen, setOpen] = useState(false)
+function Index({ id }) {
 
     return (
         <div>
-            <h4 onClick = {() => setOpen(!isOpen)}>{event.title}</h4>
-            {isOpen ? <EventBody event={event}/> : null}
+            <EventBody id={id}/>
         </div>
     )
 }
